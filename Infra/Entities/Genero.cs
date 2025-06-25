@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Infra.Entities;
 
-public class Genero
+public class Genero : BaseEntity
 {
-    public int Id { get; set; }
+    [Required]
+    [MaxLength(20)]
     public string Nome { get; set; } = null!;
     public ICollection<Anime> Animes { get; set; } = new List<Anime>();
 }

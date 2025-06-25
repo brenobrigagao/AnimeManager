@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infra.Entities;
 
-public class Anime
+public class Anime : BaseEntity
 {
-    public int Id { get; set; }
     [Required]
     [MaxLength(100)]
     public string Titulo { get; set; } = null!;

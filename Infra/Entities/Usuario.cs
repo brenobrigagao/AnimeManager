@@ -1,10 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Infra.Entities;
 
-public class Usuario
+public class Usuario : BaseEntity
 {
-    public int Id { get; set; }
-    public string Nome { get; set; }
-    public string Email { get; set; }
-    public string Senha { get; set; }
+    [Required]
+    [MaxLength(30)]
+    public string Nome { get; set; } = null!;
+
+    [Required] 
+    [EmailAddress] 
+    public string Email { get; set; } = null!;
+    [Required] 
+    public string Senha { get; set; } = null!;
+    [Required]
     public List<string> Roles { get; set; } = new List<string>();
+    public ICollection<Avaliacao> Avaliacoes { get; set; } 
 }

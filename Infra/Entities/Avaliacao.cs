@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Infra.Entities;
 
-public class Avaliacao
+public class Avaliacao : BaseEntity
 {
-    public int Id { get; set; }
     [Range(0,10)]
     public double Nota { get; set; }
     [MaxLength(1000)]
