@@ -13,7 +13,6 @@ public class Usuario : BaseEntity
     public string Email { get; set; } = null!;
     [Required] 
     public string Senha { get; set; } = null!;
-    [Required]
-    public List<string> Roles { get; set; } = new List<string>();
-    public ICollection<Avaliacao> Avaliacoes { get; set; } 
+    public bool IsAdmin { get; set; }
+    public ICollection<Avaliacao> Avaliacoes { get; set; } = new List<Avaliacao>();
 }

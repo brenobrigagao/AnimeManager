@@ -19,8 +19,7 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.Senha)
             .HasMaxLength(100)
             .IsRequired();
-        builder.Property(u => u.Roles)
-            .HasMaxLength(20)
+        builder.Property(u => u.IsAdmin)
             .IsRequired();
         builder.HasMany(u => u.Avaliacoes)
             .WithOne(a => a.Usuario)
