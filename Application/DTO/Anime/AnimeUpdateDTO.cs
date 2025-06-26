@@ -1,26 +1,26 @@
 namespace Application.DTO.Anime;
 
-public class AnimeDTO
+public class AnimeUpdateDTO
 {
     public int Id { get; set; }
     public string Descricao { get; set; } = null!;
     public string Titulo { get; set; } = null!;
-
-    public static AnimeDTO ToDTO(Infra.Entities.Anime anime)
+    
+    public static AnimeUpdateDTO ToDTO(Infra.Entities.Anime anime)
     {
-        return new AnimeDTO()
+        return new AnimeUpdateDTO()
         {
             Id = anime.Id,
             Descricao = anime.Descricao,
             Titulo = anime.Titulo,
         };
     }
-    public static Infra.Entities.Anime ToEntity(AnimeDTO animeDTO)
+    public static Infra.Entities.Anime ToEntity(AnimeUpdateDTO animeUpdateDTO)
     {
         return new Infra.Entities.Anime()
         {
-            Descricao = animeDTO.Descricao,
-            Titulo = animeDTO.Titulo,
+            Descricao = animeUpdateDTO.Descricao,
+            Titulo = animeUpdateDTO.Titulo,
         };
     }
 }

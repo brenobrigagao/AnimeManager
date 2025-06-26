@@ -12,7 +12,7 @@ public class UsuarioUpdateDTO
     [EmailAddress]
     public string Email { get; set; } = null!;
     [Required]
-    public string Senha { get; set; } = null!;
+    public string NovaSenha { get; set; } = null!;
 
     public static UsuarioUpdateDTO ToDTO(Infra.Entities.Usuario usuario)
     {
@@ -21,7 +21,7 @@ public class UsuarioUpdateDTO
             Id = usuario.Id,
             Nome = usuario.Nome,
             Email = usuario.Email,
-            Senha = usuario.Senha,
+            NovaSenha = usuario.Senha,
         };   
     }
     public static Infra.Entities.Usuario ToEntity(UsuarioUpdateDTO usuarioDTO)
@@ -30,7 +30,7 @@ public class UsuarioUpdateDTO
         {
             Nome = usuarioDTO.Nome,
             Email = usuarioDTO.Email,
-            Senha = usuarioDTO.Senha,
+            Senha = usuarioDTO.NovaSenha,
         };
     }
 }
