@@ -15,4 +15,6 @@ public class Usuario : BaseEntity
     public string Senha { get; set; } = null!;
     public bool IsAdmin { get; set; }
     public ICollection<Avaliacao> Avaliacoes { get; set; } = new List<Avaliacao>();
+
+    
 }
