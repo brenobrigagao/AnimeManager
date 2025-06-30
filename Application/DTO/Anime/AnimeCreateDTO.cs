@@ -4,6 +4,9 @@ public class AnimeCreateDTO
 {
     public string Titulo { get; set; } = null!;
     public string Descricao { get; set; } = null!;
+    public int EstudioId { get; set; }
+    public int GeneroId { get; set; }
+    public int Ano { get; set; }
 
     public static AnimeCreateDTO ToDTO(Infra.Entities.Anime anime)
     {
@@ -11,6 +14,9 @@ public class AnimeCreateDTO
         {
             Titulo = anime.Titulo,
             Descricao = anime.Descricao,
+            EstudioId = anime.EstudioId,
+            GeneroId = anime.GeneroId,
+            Ano = anime.Ano
         };
     }
     public static Infra.Entities.Anime ToEntity(AnimeCreateDTO animeCreateDTO)
@@ -19,6 +25,9 @@ public class AnimeCreateDTO
         {
             Titulo = animeCreateDTO.Titulo,
             Descricao = animeCreateDTO.Descricao,
+            EstudioId = animeCreateDTO.EstudioId,
+            GeneroId = animeCreateDTO.GeneroId,
+            Ano = animeCreateDTO.Ano
         };
     }
 }

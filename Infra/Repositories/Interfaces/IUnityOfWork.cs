@@ -1,10 +1,10 @@
 using Infra.Entities;
 
-namespace Infra.Repositories;
+namespace Infra.Repositories.Interfaces;
 
 public interface IUnityOfWork : IDisposable
 {
-    IRepository<Usuario> Usuarios { get; }
+    IUsuarioRepository Usuarios { get; }
     IRepository<Anime> Animes { get; }
     IRepository<Avaliacao> Avaliacoes { get; }
     IRepository<Estudio> Estudios { get; }

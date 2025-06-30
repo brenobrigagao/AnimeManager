@@ -1,5 +1,6 @@
 using Application.DTO.Usuario;
 using Infra.Repositories;
+using Infra.Repositories.Interfaces;
 
 namespace Application.Services.Usuario;
 
@@ -38,6 +39,11 @@ public class UsuarioService : IUsuarioService
 
     public async Task<UsuarioDTO> CreateAsync(UsuarioCreateDTO dto)
     {
+        var existente = _unitOfWork.Usuarios.GetByEmail(dto.Email);
+        if (existente != null)
+        {
+            throw new Exception("Esse email já está cadastrado");
+        }
         var usuario = new Infra.Entities.Usuario
         {
             Nome = dto.Nome,

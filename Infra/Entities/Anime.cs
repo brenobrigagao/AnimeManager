@@ -16,6 +16,7 @@ public class Anime : BaseEntity
     [Required]
     public int GeneroId { get; set; }
     public Genero Genero { get; set; }
+    public int Ano { get; set; }
     public ICollection<Avaliacao> Avaliacoes { get; set; }
     [NotMapped]
     public double MediaNota
