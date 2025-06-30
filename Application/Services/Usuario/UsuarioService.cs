@@ -14,7 +14,7 @@ public class UsuarioService : IUsuarioService
     public async Task<UsuarioDTO> GetByIdAsync(int id)
     {
         var usuario = await _unitOfWork.Usuarios.GetById(id);
-        if (usuario == null) throw new Exception("Usuario não encontrado");
+        if (usuario == null) throw new KeyNotFoundException("Usuario não encontrado");
        
         return new UsuarioDTO()
         {
@@ -57,12 +57,12 @@ public class UsuarioService : IUsuarioService
         };
     }
 
-    public async Task<UsuarioDTO> UpdateAsync(int id, UsuarioUpdateDTO dto)
+    public async Task UpdateAsync(int id, UsuarioUpdateDTO dto)
     {
         var usuario = await _unitOfWork.Usuarios.GetById(id);
         if (usuario == null)
         {
-            throw new Exception("Usuario não encontrado");
+            throw new KeyNotFoundException("Usuario não encontrado");
         }
         usuario.Nome = dto.Nome;
         usuario.Email = dto.Email;
@@ -72,6 +72,17 @@ public class UsuarioService : IUsuarioService
         }
         _unitOfWork.Usuarios.Update(usuario);
         await _unitOfWork.SaveChangesAsync();
-    };
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var usuario = await _unitOfWork.Usuarios.GetById(id);
+        if (usuario == null)
+        {
+            throw new KeyNotFoundException("O usuário vão foi encontrado");
+        }
+        _unitOfWork.Usuarios.Delete(usuario);
+        _unitOfWork.SaveChangesAsync();
+    }
 
 }
