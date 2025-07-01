@@ -6,15 +6,15 @@ namespace Application.Services.Usuario;
 
 public class UsuarioService : IUsuarioService
 {
-    private readonly IUnityOfWork _unitOfWork;
-    public UsuarioService(IUnityOfWork unitOfWork)
+    private readonly IUnityOfWork _unityOfWork;
+    public UsuarioService(IUnityOfWork unityOfWork)
     {
-        _unitOfWork = unitOfWork;
+        _unityOfWork = unityOfWork;
     }
 
     public async Task<UsuarioDTO> GetByIdAsync(int id)
     {
-        var usuario = await _unitOfWork.Usuarios.GetById(id);
+        var usuario = await _unityOfWork.Usuarios.GetById(id);
         if (usuario == null) throw new KeyNotFoundException("Usuario não encontrado");
        
         return new UsuarioDTO()
@@ -27,7 +27,7 @@ public class UsuarioService : IUsuarioService
 
     public async Task<IEnumerable<UsuarioDTO>> GetAllAsync()
     {
-        var usuarios = await _unitOfWork.Usuarios.GetAll();
+        var usuarios = await _unityOfWork.Usuarios.GetAll();
         return usuarios.Select(u => new UsuarioDTO
             {
                 Id = u.Id,
@@ -39,7 +39,7 @@ public class UsuarioService : IUsuarioService
 
     public async Task<UsuarioDTO> CreateAsync(UsuarioCreateDTO dto)
     {
-        var existente = _unitOfWork.Usuarios.GetByEmail(dto.Email);
+        var existente = _unityOfWork.Usuarios.GetByEmail(dto.Email);
         if (existente != null)
         {
             throw new Exception("Esse email já está cadastrado");
@@ -52,8 +52,8 @@ public class UsuarioService : IUsuarioService
             IsAdmin = false
         };
 
-        await _unitOfWork.Usuarios.Add(usuario);
-        await _unitOfWork.SaveChangesAsync(); 
+        await _unityOfWork.Usuarios.Add(usuario);
+        await _unityOfWork.SaveChangesAsync(); 
 
         return new UsuarioDTO
         { 
@@ -65,7 +65,7 @@ public class UsuarioService : IUsuarioService
 
     public async Task UpdateAsync(int id, UsuarioUpdateDTO dto)
     {
-        var usuario = await _unitOfWork.Usuarios.GetById(id);
+        var usuario = await _unityOfWork.Usuarios.GetById(id);
         if (usuario == null)
         {
             throw new KeyNotFoundException("Usuario não encontrado");
@@ -76,19 +76,19 @@ public class UsuarioService : IUsuarioService
         {
             usuario.Senha = dto.NovaSenha;
         }
-        _unitOfWork.Usuarios.Update(usuario);
-        await _unitOfWork.SaveChangesAsync();
+        _unityOfWork.Usuarios.Update(usuario);
+        await _unityOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        var usuario = await _unitOfWork.Usuarios.GetById(id);
+        var usuario = await _unityOfWork.Usuarios.GetById(id);
         if (usuario == null)
         {
             throw new KeyNotFoundException("O usuário vão foi encontrado");
         }
-        _unitOfWork.Usuarios.Delete(usuario);
-        _unitOfWork.SaveChangesAsync();
+        _unityOfWork.Usuarios.Delete(usuario);
+        _unityOfWork.SaveChangesAsync();
     }
 
 }

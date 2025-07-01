@@ -22,7 +22,17 @@ public class AnimeService : IAnimeService
             Titulo = anime.Titulo
         };
     }
-
+    public async Task<IEnumerable<AnimeDTO>> GetAllAsync()
+    {
+        var animes = await _unityOfWork.Animes.GetAll();
+        return animes.Select(u => new AnimeDTO
+            {
+                Id = u.Id,
+                Descricao = u.Descricao,
+                Titulo = u.Titulo
+            }
+        );
+    }
     public async Task<AnimeDTO> CreateAsync(AnimeCreateDTO dto)
     {
         var existente = await _unityOfWork.Animes.FindAsync(a => a.Titulo == dto.Titulo && a.Ano == dto.Ano && a.EstudioId == dto.EstudioId && a.GeneroId == 
@@ -47,5 +57,29 @@ public class AnimeService : IAnimeService
             Titulo = anime.Titulo,
             Descricao = anime.Descricao
         };
+    }
+
+    public async Task UpdateAsync(int id, AnimeUpdateDTO dto)
+    {
+        var anime = await _unityOfWork.Animes.GetById(id);
+        if (anime == null)
+        {
+            throw new Exception("Esse anime não foi encontrado");
+        }
+        anime.Titulo = dto.Titulo;
+        anime.Descricao = dto.Descricao;
+        _unityOfWork.Animes.Update(anime);
+        await _unityOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var anime = await _unityOfWork.Animes.GetById(id);
+        if (anime == null)
+        {
+            throw new Exception("Esse anime não existe");
+        }
+        _unityOfWork.Animes.Delete(anime);
+        await _unityOfWork.SaveChangesAsync();
     }
 }
