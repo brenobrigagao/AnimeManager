@@ -50,7 +50,7 @@ public class AnimeService : IAnimeService
             GeneroId = dto.GeneroId
         };
         await _unityOfWork.Animes.Add(anime);
-        _unityOfWork.SaveChangesAsync();
+        await _unityOfWork.SaveChangesAsync();
         return new AnimeDTO()
         {
             Id = anime.Id,
