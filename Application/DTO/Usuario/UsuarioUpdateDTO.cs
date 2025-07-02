@@ -6,31 +6,36 @@ public class UsuarioUpdateDTO
 {
     [Required]
     public int Id { get; set; }
-    [Required]
+
+    [Required(ErrorMessage = "O nome é obrigatório")]
+    [MaxLength(30)]
     public string Nome { get; set; } = null!;
-    [Required]
+
+    [Required(ErrorMessage = "O email é obrigatório")]
     [EmailAddress]
     public string Email { get; set; } = null!;
-    [Required]
+
+    [MinLength(6, ErrorMessage = "A nova senha deve ter no mínimo 6 caracteres")]
     public string NovaSenha { get; set; } = null!;
 
+    // Método para transformar ENTIDADE em DTO
     public static UsuarioUpdateDTO ToDTO(Infra.Entities.Usuario usuario)
     {
-        return new UsuarioUpdateDTO()
+        return new UsuarioUpdateDTO
         {
             Id = usuario.Id,
             Nome = usuario.Nome,
             Email = usuario.Email,
-            NovaSenha = usuario.Senha,
-        };   
-    }
-    public static Infra.Entities.Usuario ToEntity(UsuarioUpdateDTO usuarioDTO)
-    {
-        return new Infra.Entities.Usuario()
-        {
-            Nome = usuarioDTO.Nome,
-            Email = usuarioDTO.Email,
-            Senha = usuarioDTO.NovaSenha,
+            NovaSenha = string.Empty // nunca expõe a senha
         };
+    }
+
+    // Método para aplicar atualização à entidade existente
+    public void ApplyToEntity(Infra.Entities.Usuario usuario, byte[] novaHash, byte[] novoSalt)
+    {
+        usuario.Nome = Nome;
+        usuario.Email = Email;
+        usuario.SenhaHash = novaHash;
+        usuario.SenhaSalt = novoSalt;
     }
 }

@@ -1,28 +1,34 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Application.DTO.Usuario;
 
 public class UsuarioCreateDTO
 {
+    [Required(ErrorMessage = "O nome é obrigatório")]
+    [MaxLength(30, ErrorMessage = "O nome pode ter no máximo 30 caracteres")]
     public string Nome { get; set; } = null!;
+
+    [Required(ErrorMessage = "O email é obrigatório")]
+    [EmailAddress(ErrorMessage = "O email fornecido não é válido")]
     public string Email { get; set; } = null!;
+
+    [Required(ErrorMessage = "A senha é obrigatória")]
+    [MinLength(6, ErrorMessage = "A senha deve ter no mínimo 6 caracteres")]
     public string Senha { get; set; } = null!;
 
-    public static UsuarioCreateDTO ToDTO(Infra.Entities.Usuario usuario)
-    {
-        return new UsuarioCreateDTO()
-        {
-            Nome = usuario.Nome,
-            Email = usuario.Email,
-            Senha = usuario.Senha,
-        };   
-    }
+    [Compare("Senha", ErrorMessage = "As senhas não coincidem")]
+    public string ConfirmarSenha { get; set; } = null!;
 
-    public static Infra.Entities.Usuario ToEntity(UsuarioCreateDTO usuarioDTO)
+    public Infra.Entities.Usuario ToEntity(byte[] senhaHash, byte[] senhaSalt)
     {
-        return new Infra.Entities.Usuario()
+        return new Infra.Entities.Usuario
         {
-            Nome = usuarioDTO.Nome,
-            Email = usuarioDTO.Email,
-            Senha = usuarioDTO.Senha,
-        };   
+            Nome = this.Nome,
+            Email = this.Email,
+            SenhaHash = senhaHash,
+            SenhaSalt = senhaSalt,
+            TokenDataCriacao = DateTime.UtcNow,
+            IsAdmin = false
+        };
     }
 }

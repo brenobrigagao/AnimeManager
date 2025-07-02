@@ -15,9 +15,14 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.Email)
             .HasMaxLength(100)
             .IsRequired();
-        builder.Property(u => u.Senha)
-            .HasMaxLength(100)
+        builder.HasIndex(u => u.Email) 
+            .IsUnique();
+
+        builder.Property(u => u.SenhaHash)
             .IsRequired();
-        builder.HasIndex(u => u.Email).IsUnique();
+
+        builder.Property(u => u.SenhaSalt)
+            .IsRequired(false); 
+        
     }
 }
