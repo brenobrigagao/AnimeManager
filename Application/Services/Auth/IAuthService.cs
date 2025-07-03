@@ -5,6 +5,6 @@ namespace Application.Services.Auth;
 
 public interface IAuthService
 {
-    public async Task<Response<UsuarioCreateDTO>> Registrar(UsuarioCreateDTO usuario);
+    public Task<Response<UsuarioCreateDTO>> Registrar(UsuarioCreateDTO usuario);
     public bool VerificaUsuarioEmail(UsuarioCreateDTO usuarioRegistro);
 }

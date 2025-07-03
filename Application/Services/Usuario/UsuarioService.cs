@@ -2,16 +2,19 @@ using Application.DTO.Usuario;
 using Infra.Repositories.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Services.Senha;
 
 namespace Application.Services.Usuario;
 
 public class UsuarioService : IUsuarioService
 {
     private readonly IUnityOfWork _unityOfWork;
+    private readonly ISenhaService _senhaService;
 
-    public UsuarioService(IUnityOfWork unityOfWork)
+    public UsuarioService(IUnityOfWork unityOfWork,ISenhaService senhaService)
     {
         _unityOfWork = unityOfWork;
+        _senhaService = senhaService;
     }
 
     public async Task<UsuarioDTO> GetByIdAsync(int id)
@@ -44,7 +47,7 @@ public class UsuarioService : IUsuarioService
         if (existente != null)
             throw new Exception("Esse email já está cadastrado");
 
-        CriarHashSenha(dto.Senha, out byte[] senhaHash, out byte[] senhaSalt);
+        _senhaService.CriarHashSenha(dto.Senha, out byte[] senhaHash, out byte[] senhaSalt);
 
         var usuario = new Infra.Entities.Usuario
         {
@@ -78,7 +81,7 @@ public class UsuarioService : IUsuarioService
 
         if (!string.IsNullOrWhiteSpace(dto.NovaSenha))
         {
-            CriarHashSenha(dto.NovaSenha, out byte[] novaHash, out byte[] novoSalt);
+            _senhaService.CriarHashSenha(dto.NovaSenha, out byte[] novaHash, out byte[] novoSalt);
             usuario.SenhaHash = novaHash;
             usuario.SenhaSalt = novoSalt;
         }

@@ -4,6 +4,8 @@ public class AvaliacaoCreateDTO
 {
     public double Nota { get; set; }
     public string Comentario { get; set; } = null!;
+    public int UsuarioId { get; set; }
+    public int AnimeId { get; set; }
 
     public static AvaliacaoCreateDTO ToDTO(Infra.Entities.Avaliacao avaliacao)
     {
