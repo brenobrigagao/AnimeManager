@@ -36,7 +36,26 @@ public class AdminController : ControllerBase
             Status = true
         };
         return Ok(resposta);
-
     }
+
+    [Authorize]
+    [HttpPost("promover-admin/{id}")]
+    public async Task<ActionResult<Response<string>>> PromoverAdminAsync(int id)
+    {
+        if (!UsuarioEhAdmin())
+        {
+            return Forbid();
+        }
+
+        await _usuarioService.UpdateAdminAsync(id);
+        return Ok(new Response<Response<string>>
+        {
+            Mensagem = "Usuario promovido com sucesso",
+            Dados = null,
+            Status = true
+        });
+    }
+    
+    
     
 }

@@ -127,7 +127,7 @@ public class UsuarioService : IUsuarioService
         };
     }
 
-    public async Task UpdateAdminAsync(int id, UsuarioUpdateDTO dto)
+    public async Task UpdateAdminAsync(int id)
     {
         var usuario = await _unityOfWork.Usuarios.GetById(id);
         if (usuario == null) throw new KeyNotFoundException("Usuário não encontrado!");
