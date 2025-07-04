@@ -55,6 +55,21 @@ public class AdminController : ControllerBase
             Status = true
         });
     }
+
+    [Authorize]
+    [HttpGet("usuarios")]
+    public async Task<ActionResult<Response<IEnumerable<UsuarioDTO>>>> ListarUsuarios()
+    {
+        if (!UsuarioEhAdmin()) return Forbid();
+        
+        var usuarios = await _usuarioService.GetAllAsync();
+        return Ok(new Response<IEnumerable<UsuarioDTO>>
+        {
+            Mensagem = "Aqui estão todos os usuários",
+            Dados = usuarios,
+            Status = true
+        });
+    }
     
     
     
