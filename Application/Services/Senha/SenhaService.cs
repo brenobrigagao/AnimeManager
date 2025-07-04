@@ -40,15 +40,16 @@ public class SenhaService : ISenhaService
     {
         List<Claim> Claims = new List<Claim>()
         {
-            new Claim("Administrador", usuario.IsAdmin.ToString()),
-            new Claim("Email", usuario.Email),
-            new Claim("Nome", usuario.Nome)
+            new Claim("IsAdmin", usuario.IsAdmin.ToString()),
+            new Claim(ClaimTypes.Email, usuario.Email),
+            new Claim(ClaimTypes.Name, usuario.Nome),
+            new Claim(ClaimTypes.Role,usuario.IsAdmin ? "Admin" : "User")
         };
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
         var cred =  new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
             claims: Claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: DateTime.Now.AddHours(24),
             signingCredentials: cred
         );
         var jwt = new  JwtSecurityTokenHandler().WriteToken(token);

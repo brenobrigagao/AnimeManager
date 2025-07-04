@@ -9,4 +9,8 @@ public interface IUsuarioService
     Task<UsuarioDTO> CreateAsync(UsuarioCreateDTO dto);
     Task UpdateAsync(int id, UsuarioUpdateDTO dto);
     Task DeleteAsync(int id);
+    Task<UsuarioDTO> CreateAdminAsync(UsuarioCreateDTO dto);
+    Task UpdateAdminAsync(int id, UsuarioUpdateDTO dto);
+
+
 }

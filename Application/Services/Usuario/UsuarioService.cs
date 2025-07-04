@@ -100,5 +100,43 @@ public class UsuarioService : IUsuarioService
         await _unityOfWork.SaveChangesAsync();
     }
 
+    public async Task<UsuarioDTO> CreateAdminAsync(UsuarioCreateDTO dto)
+    {
+        var existe = await _unityOfWork.Usuarios.GetByEmail(dto.Email);
+        if (existe != null) throw new Exception("Esse email já está cadastrado");
+        
+        _senhaService.CriarHashSenha(dto.Senha, out byte[] senhaHash, out byte[] senhaSalt);
+
+        var usuario = new Infra.Entities.Usuario
+        {
+            Nome = dto.Nome,
+            Email = dto.Email,
+            SenhaHash = senhaHash,
+            SenhaSalt = senhaSalt,
+            TokenDataCriacao = DateTime.UtcNow,
+            IsAdmin = true
+        };
+        
+        await _unityOfWork.Usuarios.Add(usuario);
+        await _unityOfWork.SaveChangesAsync();
+        return new UsuarioDTO
+        {
+            Id = usuario.Id,
+            Nome = usuario.Nome,
+            Email = usuario.Email
+        };
+    }
+
+    public async Task UpdateAdminAsync(int id, UsuarioUpdateDTO dto)
+    {
+        var usuario = await _unityOfWork.Usuarios.GetById(id);
+        if (usuario == null) throw new KeyNotFoundException("Usuário não encontrado!");
+
+        usuario.IsAdmin = true;
+        _unityOfWork.Usuarios.Update(usuario);
+        await  _unityOfWork.SaveChangesAsync();
+        
+    }
+
     
 }
