@@ -70,6 +70,20 @@ public class AdminController : ControllerBase
             Status = true
         });
     }
+
+    [Authorize]
+    [HttpGet("usuario/{id}")]
+    public async Task<ActionResult<Response<string>>> DeletarUsuario(int id)
+    {
+        if(!UsuarioEhAdmin()) return  Forbid();
+        await _usuarioService.DeleteAsync(id);
+        return Ok(new Response<string>
+        {
+            Mensagem = "Usuario deletado com sucesso",
+            Dados = null,
+            Status = true
+        });
+    }
     
     
     
