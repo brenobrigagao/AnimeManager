@@ -29,13 +29,14 @@ public class AdminController : ControllerBase
             return Forbid();
         }
         var novoAdmin = await _usuarioService.CreateAdminAsync(dto);
-        var resposta = new Response<UsuarioDTO>
-        {
-            Mensagem = "Admin registrado com sucesso.",
-            Dados = novoAdmin,
-            Status = true
-        };
-        return Ok(resposta);
+        
+        return Ok(new Response<UsuarioDTO>
+            {
+                Mensagem = "Admin cadastrado com sucesso",
+                Dados =  novoAdmin,
+                Status = true
+            }
+        );
     }
 
     [Authorize]
