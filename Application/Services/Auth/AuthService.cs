@@ -112,4 +112,54 @@ public class AuthService : IAuthService
         return respostaServico;
     }
 
+    public async Task<Response<TokenDTO>> RefreshToken(RefreshTokenRequestDTO request)
+    {
+        Response<TokenDTO> respostaServico = new Response<TokenDTO>();
+
+        try
+        {
+            var refreshTokenEntity = await _context.RefreshTokens
+                .Include(rt => rt.Usuario)
+                .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken);
+
+            if (refreshTokenEntity == null || refreshTokenEntity.Revogado ||
+                refreshTokenEntity.Expires <= DateTime.UtcNow)
+            {
+                respostaServico.Mensagem = "Refresh Token inválido ou expirado";
+                respostaServico.Status = false;
+                return respostaServico;
+            }
+
+            var novoAcessToken = _senhaService.CriarToken(refreshTokenEntity.Usuario);
+            var novoRefreshToken = _senhaService.GerarRefreshToken();
+
+            refreshTokenEntity.Revogado = true;
+            _context.RefreshTokens.Add(new RefreshToken
+            {
+                Token = novoAcessToken,
+                Expires = DateTime.UtcNow.AddDays(7),
+                UsuarioId = refreshTokenEntity.Usuario.Id,
+                Revogado = false
+            });
+            await _context.SaveChangesAsync();
+
+            respostaServico.Mensagem = "Token renovado com sucesso";
+            respostaServico.Status = true;
+            respostaServico.Dados = new TokenDTO
+            {
+                AcessToken = novoAcessToken,
+                RefreshToken = novoRefreshToken
+            };
+        }
+        catch (Exception ex)
+        {
+            respostaServico.Mensagem = ex.Message;
+            respostaServico.Status = false;
+            respostaServico.Dados = null;
+        }
+
+        return respostaServico;
+    }
+
 }
+
