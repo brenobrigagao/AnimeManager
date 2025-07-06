@@ -17,5 +17,6 @@ public class Usuario : BaseEntity
     public DateTime TokenDataCriacao { get; set; } = DateTime.Now;
     public bool IsAdmin { get; set; }
     public ICollection<Avaliacao> Avaliacoes { get; set; } = new List<Avaliacao>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; }
     
 }
