@@ -1,4 +1,5 @@
 using Application.DTO.Auth;
+using Application.DTO.Token;
 using Application.DTO.Usuario;
 using Application.Services.Senha;
 using Infra.Data.Context;
@@ -61,12 +62,13 @@ public class AuthService : IAuthService
         if (usuario != null) return false;
         return true;
     }
-    public async Task<Response<string>> Login(UsuarioLoginDTO dto)
+    public async Task<Response<TokenDTO>> Login(UsuarioLoginDTO dto)
     {
-        Response<string> respostaServico = new Response<string>();
+        Response<TokenDTO> respostaServico = new Response<TokenDTO>();
         try
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var usuario = await _context.Usuarios.Include(u => u.RefreshTokens)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (usuario == null)
             {
                 respostaServico.Mensagem = "Esse email não está cadastrado";
@@ -80,10 +82,26 @@ public class AuthService : IAuthService
                 return respostaServico;
             }
 
-            var token = _senhaService.CriarToken(usuario);
+            var acessToken = _senhaService.CriarToken(usuario);
+            var refreshToken = _senhaService.GerarRefreshToken();
+
+            var refreshTokenEntity = new RefreshToken()
+            {
+                Token = refreshToken,
+                Expires = DateTime.UtcNow.AddDays(7),
+                UsuarioId = usuario.Id,
+                Revogado = false
+            };
+            _context.RefreshTokens.Add(refreshTokenEntity);
+            await _context.SaveChangesAsync();
+
             respostaServico.Mensagem = "Usuario logado com sucesso";
-            respostaServico.Dados = token;
-            
+            respostaServico.Status = true;
+            respostaServico.Dados = new TokenDTO
+            {
+                AcessToken = acessToken,
+                RefreshToken = refreshToken
+            };
         }
         catch (Exception ex)
         {

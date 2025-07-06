@@ -55,4 +55,14 @@ public class SenhaService : ISenhaService
         var jwt = new  JwtSecurityTokenHandler().WriteToken(token);
         return jwt;
     }
+
+    public string GerarRefreshToken()
+    {
+        var randomBytes = new byte[64];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+    }
 }
