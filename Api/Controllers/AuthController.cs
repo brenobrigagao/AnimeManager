@@ -1,4 +1,5 @@
 using Application.DTO.Auth;
+using Application.DTO.Token;
 using Application.DTO.Usuario;
 using Application.Services.Auth;
 using Application.Services.Senha;
@@ -36,6 +37,16 @@ public class AuthController : ControllerBase
         var resposta = await _authService.Login(dto);
         return Ok(resposta);
     }
-  
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO request)
+    {
+        var resultado = await _authService.RefreshToken(request);
+        if (!resultado.Status)
+        {
+            return BadRequest();
+        }
+        return Ok(resultado);
+    }
 }
 
