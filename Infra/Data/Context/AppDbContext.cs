@@ -1,3 +1,5 @@
+using Infra.Configurations;
+using Infra.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Infra.Entities;
 
@@ -13,4 +15,17 @@ public class AppDbContext : DbContext
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+        modelBuilder.ApplyConfiguration(new AvaliacaoConfiguration());
+        modelBuilder.ApplyConfiguration(new EstudioCofiguration());
+        modelBuilder.ApplyConfiguration(new GeneroConfiguration());
+        modelBuilder.ApplyConfiguration(new UsuarioConfiguration());
+        modelBuilder.ApplyConfiguration(new AnimeConfiguration());
+        
+    }
 }
