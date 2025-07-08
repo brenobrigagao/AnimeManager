@@ -248,5 +248,35 @@ public class AuthService : IAuthService
         return respostaServico;
     }
 
+    public async Task<Response<string>> ResetarSenha(ResetarSenhaDTO dto)
+    {
+        var respostaServico = new Response<string>();
+        try
+        {
+            var resetToken = await _context.PasswordResetTokens.FirstOrDefaultAsync(t =>
+                t.Token == dto.Token && !t.Usado && t.Expires > DateTime.UtcNow);
+            if (resetToken == null)
+            {
+                respostaServico.Mensagem = "Token inválido ou inspirado";
+                respostaServico.Status = false;
+                return respostaServico;
+            }
+
+            _senhaService.CriarHashSenha(dto.NovaSenha, out byte[] hash, out byte[] salt);
+            resetToken.Usuario.SenhaHash = hash;
+            resetToken.Usuario.SenhaSalt = salt;
+            resetToken.Usado = true;
+            await _context.SaveChangesAsync();
+
+            respostaServico.Status = true;
+            respostaServico.Mensagem = "Senha resetada com sucesso";
+        }
+        catch (Exception e)
+        {
+            respostaServico.Status = false;
+            respostaServico.Mensagem = $"Erro ao resetar a senha: {e.Message}";
+        }
+        return respostaServico;
+    }
 }
 
