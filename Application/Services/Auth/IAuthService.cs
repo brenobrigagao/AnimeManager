@@ -13,6 +13,10 @@ public interface IAuthService
     public Task<Response<TokenDTO>> RefreshToken(RefreshTokenRequestDTO request);
     public Task<Response<string>> Logout(RefreshTokenRequestDTO request);
     public Task<Response<string>> LogoutGlobal(int UsuarioId);
+    public Task<Response<string>> SolicitarRefefinicaoSenha(EsqueciSenhaDTO dto);
+    public Task<Response<string>> ResetarSenha(ResetarSenhaDTO dto);
+
+
 
 
 

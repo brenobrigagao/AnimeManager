@@ -79,5 +79,29 @@ public class AuthController : ControllerBase
         }
         return Ok(resultado);
     }
+
+    [HttpPost]
+    [Route("esqueci-senha")]
+    public async Task<IActionResult> SolicitarRefefinicaoSenha(EsqueciSenhaDTO dto)
+    {
+        var resultado = await _authService.SolicitarRefefinicaoSenha(dto);
+        if (!resultado.Status)
+        {
+            return BadRequest(resultado);
+        }
+        return Ok(resultado);
+    }
+
+    [HttpPost]
+    [Route("redefinir-senha")]
+    public async Task<IActionResult> RedefinirSenha(ResetarSenhaDTO dto)
+    {
+        var resultado = await _authService.ResetarSenha(dto);
+        if(!resultado.Status)
+        {
+            return BadRequest(resultado);
+        }
+        return Ok(resultado);
+    }
 }
 
