@@ -30,6 +30,10 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Registrar(UsuarioCreateDTO dto)
     {
         var resposta = await _authService.Registrar(dto);
+        if (!resposta.Status)
+        {
+            return BadRequest(resposta);
+        }
         return Ok(resposta);
     }
 
@@ -37,6 +41,10 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(UsuarioLoginDTO dto)
     {
         var resposta = await _authService.Login(dto);
+        if (!resposta.Status)
+        {
+            return BadRequest(resposta);
+        }
         return Ok(resposta);
     }
 
@@ -63,7 +71,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("Logout Global")]
+    [HttpGet("LogoutGlobal")]
     public async Task<IActionResult> LogoutGlobal()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier);
