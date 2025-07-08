@@ -14,10 +14,6 @@ public class SenhaService : ISenhaService
     {
         _config = config;
     }
-    
-        
-    
-    
     public void CriarHashSenha(string senha, out byte[] hash, out byte[] salt)
     {
         using (var hmac = new HMACSHA512()){

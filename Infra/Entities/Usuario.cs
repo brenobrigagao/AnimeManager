@@ -4,14 +4,8 @@ namespace Infra.Entities;
 
 public class Usuario : BaseEntity
 {
-    [Required]
-    [MaxLength(30)]
     public string Nome { get; set; } = null!;
-
-    [Required] 
-    [EmailAddress] 
     public string Email { get; set; } = null!;
-    [Required] 
     public byte[] SenhaHash { get; set; }
     public byte[] SenhaSalt { get; set; }
     public DateTime TokenDataCriacao { get; set; } = DateTime.Now;
