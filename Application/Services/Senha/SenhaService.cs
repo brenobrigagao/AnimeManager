@@ -66,4 +66,5 @@ public class SenhaService : ISenhaService
             return Convert.ToBase64String(randomBytes);
         }
     }
+    
 }

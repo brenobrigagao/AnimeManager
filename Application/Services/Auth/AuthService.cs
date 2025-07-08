@@ -214,5 +214,39 @@ public class AuthService : IAuthService
         return respostaServico;
     }
 
+    public async Task<Response<string>> SolicitarRefefinicaoSenha(EsqueciSenhaDTO dto)
+    {
+        var respostaServico = new Response<string>();
+        try
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (usuario == null)
+            {
+                respostaServico.Mensagem = "Email não cadastrado";
+                respostaServico.Status = false;
+                return respostaServico;
+            }
+            var token = Guid.NewGuid().ToString();
+            var resetToken = new PasswordResetToken
+            {
+                Token = token,
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                usuarioId = usuario.Id,
+                Usado = false
+            };
+            _context.PasswordResetTokens.Add(resetToken);
+            await _context.SaveChangesAsync();
+            respostaServico.Mensagem = "Token de redefinição enviado com sucesso";
+            respostaServico.Status = true;
+            respostaServico.Dados = token;
+        }
+        catch (Exception e)
+        {
+            respostaServico.Status = false;
+            respostaServico.Mensagem = $"Erro ao solicitar o token de redefinição: {e.Message}";
+        }
+        return respostaServico;
+    }
+
 }
 
