@@ -24,7 +24,6 @@ public class AdminController : ControllerBase
         _adminService = adminService;
     }
     
-    [Authorize]
     [HttpPost("registrar-admin")]
     public async Task<ActionResult> RegistrarAdminAsync(UsuarioCreateDTO dto)
     {
@@ -36,7 +35,6 @@ public class AdminController : ControllerBase
         return Ok(resultado);
     }
 
-    [Authorize]
     [HttpPost("promover-admin/{id}")]
     public async Task<ActionResult> PromoverAdminAsync(int id)
     {
@@ -48,33 +46,26 @@ public class AdminController : ControllerBase
       return Ok(resultado);
     }
 
-    [Authorize]
-    [HttpGet("usuarios")]
-    public async Task<ActionResult<Response<IEnumerable<UsuarioDTO>>>> ListarUsuarios()
+    [HttpGet("listar-usuarios")]
+    public async Task<ActionResult> ListarUsuarios()
     {
-        
-        var usuarios = await _usuarioService.GetAllAsync();
-        return Ok(new Response<IEnumerable<UsuarioDTO>>
+        var resultado = await _adminService.ListarUsuarios();
+        if(!resultado.Status)
         {
-            Mensagem = "Aqui estão todos os usuários",
-            Dados = usuarios,
-            Status = true
-        });
+            return BadRequest(resultado);
+        }
+        return Ok(resultado);
     }
 
     [Authorize]
-    [HttpGet("usuario/{id}")]
-    public async Task<ActionResult<Response<string>>> DeletarUsuario(int id)
+    [HttpDelete("deletar-usuario/{id}")]
+    public async Task<ActionResult> DeletarUsuario(int id)
     {
-        await _usuarioService.DeleteAsync(id);
-        return Ok(new Response<string>
+        var resultado = await _adminService.DeletarUsuario(id);
+        if(!resultado.Status)
         {
-            Mensagem = "Usuario deletado com sucesso",
-            Dados = null,
-            Status = true
-        });
+            return BadRequest(resultado);
+        }
+        return Ok(resultado);
     }
-    
-    
-    
 }

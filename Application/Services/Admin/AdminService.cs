@@ -52,4 +52,40 @@ public class AdminService : IAdminService
         }
         return respostaServico;
     }
+
+    public async Task<Response<IEnumerable<UsuarioDTO>>> ListarUsuarios()
+    {
+        var respostaServico = new Response<IEnumerable<UsuarioDTO>>();
+        try
+        {
+            var usuarios = await _usuarioService.GetAllAsync();
+            respostaServico.Mensagem = "Lista com todos os usuários";
+            respostaServico.Status = true;
+            respostaServico.Dados = usuarios;
+        }
+        catch (Exception e)
+        {
+            respostaServico.Mensagem = $"Erro ao listar os usuários: {e.Message}";
+            respostaServico.Status = false;
+            respostaServico.Dados = null;
+        }
+        return respostaServico;
+    }
+
+    public async Task<Response<string>> DeletarUsuario(int id)
+    {
+        var respostaServico = new Response<string>();
+        try
+        {
+            await _usuarioService.DeleteAsync(id);
+            respostaServico.Status = true;
+            respostaServico.Mensagem = "Usuario deletado com sucesso";
+        }
+        catch (Exception e)
+        {
+            respostaServico.Status = false;
+            respostaServico.Mensagem = $"Erro ao deletar um usuario: {e.Message}";
+        }
+        return respostaServico;
+    }
 }
