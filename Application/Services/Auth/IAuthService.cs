@@ -11,6 +11,10 @@ public interface IAuthService
     public bool VerificaUsuarioEmail(UsuarioCreateDTO usuarioRegistro);
     public Task<Response<TokenDTO>> Login(UsuarioLoginDTO dto);
     public Task<Response<TokenDTO>> RefreshToken(RefreshTokenRequestDTO request);
+    public Task<Response<string>> Logout(RefreshTokenRequestDTO request);
+    public Task<Response<string>> LogoutGlobal(int UsuarioId);
+
+
 
 
 }

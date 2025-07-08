@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Application.DTO.Usuario;
 using Application.Services.Usuario;
 using Infra.Entities;
@@ -16,8 +17,14 @@ public class AdminController : ControllerBase
 
     private bool UsuarioEhAdmin()
     {
-        var claim = User.Claims.FirstOrDefault(c => c.Type == "isAdmin")?.Value;
-        return claim == "True";
+        var claim = User.Claims.FirstOrDefault(c =>
+            c.Type == "IsAdmin" || c.Type == ClaimTypes.Role && c.Value == "Admin");
+        if (claim == null)
+        {
+            return false;
+        }
+        return claim.Value.Equals("True", StringComparison.InvariantCultureIgnoreCase) 
+            || claim.Value.Equals("Admin", StringComparison.InvariantCultureIgnoreCase);
     }
 
     [Authorize]

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Application.DTO.Auth;
 using Application.DTO.Token;
 using Application.DTO.Usuario;
@@ -6,6 +7,7 @@ using Application.Services.Senha;
 using Infra.Data.Context;
 using Infra.Entities;
 using Infra.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +47,35 @@ public class AuthController : ControllerBase
         if (!resultado.Status)
         {
             return BadRequest();
+        }
+        return Ok(resultado);
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshTokenRequestDTO request)
+    {
+        var resultado = await _authService.Logout(request);
+        if (!resultado.Status)
+        {
+            return BadRequest(resultado);
+        }
+        return Ok(resultado);
+    }
+
+    [Authorize]
+    [HttpGet("Logout Global")]
+    public async Task<IActionResult> LogoutGlobal()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized("ID do usuário não foi encontrado no token");
+        }
+        int usuarioId = int.Parse(userId.Value);
+        var resultado = await _authService.LogoutGlobal(usuarioId);
+        if (!resultado.Status)
+        {
+            return BadRequest(resultado);
         }
         return Ok(resultado);
     }

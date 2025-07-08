@@ -137,7 +137,7 @@ public class AuthService : IAuthService
             _context.RefreshTokens.Add(new RefreshToken
             {
                 Token = novoAcessToken,
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(1),
                 UsuarioId = refreshTokenEntity.Usuario.Id,
                 Revogado = false
             });
@@ -158,6 +158,59 @@ public class AuthService : IAuthService
             respostaServico.Dados = null;
         }
 
+        return respostaServico;
+    }
+
+    public async Task<Response<string>> Logout(RefreshTokenRequestDTO request)
+    {
+        var respostaServico = new Response<string>();
+        try
+        {
+            var token = await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken);
+            if (token == null || token.Revogado)
+            {
+                respostaServico.Mensagem = "Token inválido ou já revogado";
+                respostaServico.Status = false;
+                respostaServico.Dados = null;
+            }
+
+            token.Revogado = true;
+            await _context.SaveChangesAsync();
+
+            respostaServico.Status = true;
+            respostaServico.Mensagem = "Logout realizado com sucesso";
+        }
+        catch (Exception e)
+        {
+            respostaServico.Status = false;
+            respostaServico.Mensagem = $"Erro ao fazer logout: {e.Message}";
+        }
+
+        return respostaServico;
+    }
+
+    public async Task<Response<string>> LogoutGlobal(int UsuarioId)
+    {
+        var respostaServico = new Response<string>();
+        try
+        {
+            var tokens = await _context.RefreshTokens
+                .Where(rt => rt.UsuarioId == UsuarioId && !rt.Revogado)
+                .ToListAsync();
+            foreach (var token in tokens)
+            {
+                token.Revogado = true;
+            }
+
+            await _context.SaveChangesAsync();
+            respostaServico.Status = true;
+            respostaServico.Mensagem = "Todos os RefreshToken foram revogados com sucesso";
+        }
+        catch (Exception e)
+        {
+            respostaServico.Status = false;
+            respostaServico.Mensagem = $"Erro ao fazer o logout global: {e.Message}";
+        }
         return respostaServico;
     }
 
