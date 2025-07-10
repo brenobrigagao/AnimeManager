@@ -1,3 +1,4 @@
+using Api;
 using Application.Services.Auth;
 using Application.Services.Senha;
 using Infra.Data.Context;
@@ -26,4 +27,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthentication();
 app.MapControllers();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.Run();
