@@ -1,17 +1,14 @@
 using Application.DTO.Genero;
+using Infra.Entities;
 
-namespace Application.Services.Genero;
-
-public interface IGeneroService
+namespace Application.Services.Genero
 {
-    public Task<IEnumerable<GeneroDTO>> GetAllAsync();
-    public Task<GeneroDTO> GetByIdAsync(int id);
-    public Task<GeneroDTO> CreateAsync(GeneroCreateDTO dto);
-    public Task UpdateAsync(int id, GeneroUpdateDTO dto);
-    public Task DeleteAsync(int id);
-
-
-
-
-
+    public interface IGeneroService
+    {
+        Task<Response<GeneroDTO>> GetByIdAsync(int id);
+        Task<Response<IEnumerable<GeneroDTO>>> GetAllAsync();
+        Task<Response<GeneroDTO>> CreateAsync(GeneroCreateDTO dto);
+        Task<Response<string>> UpdateAsync(int id, GeneroUpdateDTO dto);
+        Task<Response<string>> DeleteAsync(int id);
+    }
 }
