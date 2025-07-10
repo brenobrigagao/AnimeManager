@@ -13,14 +13,9 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class AdminController : ControllerBase
 {
-    private readonly IUnityOfWork _unityOfWork;
     private readonly IAdminService _adminService;
-    private readonly IUsuarioService _usuarioService;
-
-    public AdminController(IUnityOfWork unityOfWork, IUsuarioService usuarioService, IAdminService adminService)
+    public AdminController(IAdminService adminService)
     {
-        _unityOfWork = unityOfWork;
-        _usuarioService = usuarioService;
         _adminService = adminService;
     }
     
