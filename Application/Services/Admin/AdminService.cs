@@ -1,91 +1,39 @@
-using System.Security.Claims;
 using Application.DTO.Usuario;
 using Application.Services.Usuario;
 using Infra.Data.Context;
 using Infra.Entities;
 
-namespace Application.Services.Admin;
-
-public class AdminService : IAdminService
+namespace Application.Services.Admin
 {
-    private readonly AppDbContext _context;
-    private readonly IUsuarioService _usuarioService;
-
-    public AdminService(AppDbContext context,IUsuarioService usuarioService)
+    public class AdminService : IAdminService
     {
-        _context = context;
-        _usuarioService = usuarioService;
-    }
+        private readonly AppDbContext _context;
+        private readonly IUsuarioService _usuarioService;
 
-    public async Task<Response<UsuarioDTO>> RegistrarAdmin(UsuarioCreateDTO dto)
-    {
-        var respostaServico = new Response<UsuarioDTO>();
-        try
+        public AdminService(AppDbContext context, IUsuarioService usuarioService)
         {
-            var novoAdmin = await _usuarioService.CreateAdminAsync(dto);
-            respostaServico.Status = true;
-            respostaServico.Mensagem = "Admin cadastrado com sucesso";
-            respostaServico.Dados = novoAdmin;
+            _context = context;
+            _usuarioService = usuarioService;
         }
-        catch (Exception e)
-        {
-            respostaServico.Status = false;
-            respostaServico.Mensagem = $"Erro ao cadastrar um novo admin: {e.Message}";
-            respostaServico.Dados = null;
-        }
-        return respostaServico;
-    }
 
-    public async Task<Response<string>> PromoverAdmin(int id)
-    {
-        var respostaServico = new Response<string>();
-        try
+        public async Task<Response<UsuarioDTO>> RegistrarAdmin(UsuarioCreateDTO dto)
         {
-            await _usuarioService.UpdateAdminAsync(id);
-            respostaServico.Status = true;
-            respostaServico.Mensagem = "Admin promovido com sucesso";
+            return await _usuarioService.CreateAdminAsync(dto);
         }
-        catch (Exception e)
-        {
-            respostaServico.Status = false;
-            respostaServico.Mensagem = $"Erro ao promover um admin: {e.Message}";
-        }
-        return respostaServico;
-    }
 
-    public async Task<Response<IEnumerable<UsuarioDTO>>> ListarUsuarios()
-    {
-        var respostaServico = new Response<IEnumerable<UsuarioDTO>>();
-        try
+        public async Task<Response<string>> PromoverAdmin(int id)
         {
-            var usuarios = await _usuarioService.GetAllAsync();
-            respostaServico.Mensagem = "Lista com todos os usuários";
-            respostaServico.Status = true;
-            respostaServico.Dados = usuarios;
+            return await _usuarioService.UpdateAdminAsync(id);
         }
-        catch (Exception e)
-        {
-            respostaServico.Mensagem = $"Erro ao listar os usuários: {e.Message}";
-            respostaServico.Status = false;
-            respostaServico.Dados = null;
-        }
-        return respostaServico;
-    }
 
-    public async Task<Response<string>> DeletarUsuario(int id)
-    {
-        var respostaServico = new Response<string>();
-        try
+        public async Task<Response<IEnumerable<UsuarioDTO>>> ListarUsuarios()
         {
-            await _usuarioService.DeleteAsync(id);
-            respostaServico.Status = true;
-            respostaServico.Mensagem = "Usuario deletado com sucesso";
+            return await _usuarioService.GetAllAsync();
         }
-        catch (Exception e)
+
+        public async Task<Response<string>> DeletarUsuario(int id)
         {
-            respostaServico.Status = false;
-            respostaServico.Mensagem = $"Erro ao deletar um usuario: {e.Message}";
+            return await _usuarioService.DeleteAsync(id);
         }
-        return respostaServico;
     }
 }

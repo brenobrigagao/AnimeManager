@@ -1,7 +1,7 @@
 using Application.DTO.Avaliacao;
 using Application.Services.Avaliação;
-using Infra.Repositories;
 using Infra.Entities;
+using Infra.Repositories;
 
 namespace Application.Services.Avaliacao;
 
@@ -14,10 +14,15 @@ public class AvaliacaoService : IAvaliacaoService
         _unityOfWork = unityOfWork;
     }
 
-    public async Task<IEnumerable<AvaliacaoDTO>> GetAllAsync()
+    public async Task<Response<IEnumerable<AvaliacaoDTO>>> GetAllAsync()
     {
+        var resposta = new Response<IEnumerable<AvaliacaoDTO>>();
+
         var avaliacoes = await _unityOfWork.Avaliacoes.GetAll();
-        return avaliacoes.Select(a => new AvaliacaoDTO
+
+        resposta.Status = true;
+        resposta.Mensagem = "Lista de avaliações carregada com sucesso";
+        resposta.Dados = avaliacoes.Select(a => new AvaliacaoDTO
         {
             Id = a.Id,
             Nota = a.Nota,
@@ -25,14 +30,25 @@ public class AvaliacaoService : IAvaliacaoService
             UsuarioId = a.UsuarioId,
             AnimeId = a.AnimeId
         });
+
+        return resposta;
     }
 
-    public async Task<AvaliacaoDTO> GetByIdAsync(int id)
+    public async Task<Response<AvaliacaoDTO>> GetByIdAsync(int id)
     {
-        var avaliacao = await _unityOfWork.Avaliacoes.GetById(id);
-        if (avaliacao == null) throw new Exception("Avaliação não encontrada");
+        var resposta = new Response<AvaliacaoDTO>();
 
-        return new AvaliacaoDTO
+        var avaliacao = await _unityOfWork.Avaliacoes.GetById(id);
+        if (avaliacao == null)
+        {
+            resposta.Status = false;
+            resposta.Mensagem = "Avaliação não encontrada";
+            return resposta;
+        }
+
+        resposta.Status = true;
+        resposta.Mensagem = "Avaliação encontrada";
+        resposta.Dados = new AvaliacaoDTO
         {
             Id = avaliacao.Id,
             Nota = avaliacao.Nota,
@@ -40,10 +56,14 @@ public class AvaliacaoService : IAvaliacaoService
             UsuarioId = avaliacao.UsuarioId,
             AnimeId = avaliacao.AnimeId
         };
+
+        return resposta;
     }
 
-    public async Task<AvaliacaoDTO> CreateAsync(AvaliacaoCreateDTO dto)
+    public async Task<Response<AvaliacaoDTO>> CreateAsync(AvaliacaoCreateDTO dto)
     {
+        var resposta = new Response<AvaliacaoDTO>();
+
         var nova = new Infra.Entities.Avaliacao
         {
             Nota = dto.Nota,
@@ -55,7 +75,9 @@ public class AvaliacaoService : IAvaliacaoService
         await _unityOfWork.Avaliacoes.Add(nova);
         await _unityOfWork.SaveChangesAsync();
 
-        return new AvaliacaoDTO
+        resposta.Status = true;
+        resposta.Mensagem = "Avaliação criada com sucesso";
+        resposta.Dados = new AvaliacaoDTO
         {
             Id = nova.Id,
             Nota = nova.Nota,
@@ -63,26 +85,54 @@ public class AvaliacaoService : IAvaliacaoService
             UsuarioId = nova.UsuarioId,
             AnimeId = nova.AnimeId
         };
+
+        return resposta;
     }
 
-    public async Task UpdateAsync(int id, AvaliacaoUpdateDTO dto)
+    public async Task<Response<string>> UpdateAsync(int id, AvaliacaoUpdateDTO dto)
     {
+        var resposta = new Response<string>();
+
         var avaliacao = await _unityOfWork.Avaliacoes.GetById(id);
-        if (avaliacao == null) throw new Exception("Avaliação não encontrada");
+        if (avaliacao == null)
+        {
+            resposta.Status = false;
+            resposta.Mensagem = "Avaliação não encontrada";
+            return resposta;
+        }
 
         avaliacao.Nota = dto.Nota;
         avaliacao.Comentario = dto.Comentario;
 
         _unityOfWork.Avaliacoes.Update(avaliacao);
         await _unityOfWork.SaveChangesAsync();
+
+        resposta.Status = true;
+        resposta.Mensagem = "Avaliação atualizada com sucesso";
+        resposta.Dados = "Atualização concluída";
+
+        return resposta;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<Response<string>> DeleteAsync(int id)
     {
+        var resposta = new Response<string>();
+
         var avaliacao = await _unityOfWork.Avaliacoes.GetById(id);
-        if (avaliacao == null) throw new Exception("Avaliação não encontrada");
+        if (avaliacao == null)
+        {
+            resposta.Status = false;
+            resposta.Mensagem = "Avaliação não encontrada";
+            return resposta;
+        }
 
         _unityOfWork.Avaliacoes.Delete(avaliacao);
         await _unityOfWork.SaveChangesAsync();
+
+        resposta.Status = true;
+        resposta.Mensagem = "Avaliação deletada com sucesso";
+        resposta.Dados = "Deleção concluída";
+
+        return resposta;
     }
 }
