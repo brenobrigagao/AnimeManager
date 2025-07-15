@@ -145,6 +145,25 @@ public class AvaliacaoService : IAvaliacaoService
         return resposta;
     }
 
+    public async Task<Response<IEnumerable<AvaliacaoDTO>>> GetAvaliacoesPorUsuario(int usuarioId)
+    {
+        var resposta = new Response<IEnumerable<AvaliacaoDTO>>();
+        
+        var avaliacoes = await _unityOfWork.Avaliacoes.FindAsync(a =>a.UsuarioId == usuarioId);
+        
+        resposta.Status = true;
+        resposta.Mensagem = "Avaliações do usuário carregadas";
+        resposta.Dados = avaliacoes.Select(a => new AvaliacaoDTO()
+        {
+            Id = a.Id,
+            Nota = a.Nota,
+            Comentario = a.Comentario,
+            UsuarioId = a.UsuarioId,
+            AnimeId = a.AnimeId
+        });
+        return resposta;
+    }
+
     private async Task AtualizarMediaDoAnime(int animeId)
     {
         var avaliacoes = await _unityOfWork.Avaliacoes.FindAsync(a => a.AnimeId == animeId);
