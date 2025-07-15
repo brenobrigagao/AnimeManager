@@ -142,4 +142,23 @@ public class AnimeService : IAnimeService
 
         return resposta;
     }
+
+    public async Task<Response<IEnumerable<AnimeDTO>>> FiltrarAsync(string? titulo, int? generoId, int? estudioId)
+    {
+        var resposta = new Response<IEnumerable<AnimeDTO>>();
+        var animes = await _unityOfWork.Animes.FindAsync(a =>
+            (string.IsNullOrEmpty(titulo) || a.Titulo.Contains(titulo)) && 
+            (!generoId.HasValue || a.GeneroId == generoId.Value) && 
+            (!estudioId.HasValue || a.EstudioId == estudioId.Value));
+        
+        resposta.Mensagem = "Animes filtrados com sucesso!";
+        resposta.Status = true;
+        resposta.Dados = animes.Select(a => new AnimeDTO
+        {
+            Id = a.Id,
+            Titulo = a.Titulo,
+            Descricao = a.Descricao
+        });
+        return resposta;
+    }
 }

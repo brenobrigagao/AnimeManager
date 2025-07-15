@@ -10,5 +10,7 @@ namespace Application.Services.Anime
         Task<Response<AnimeDTO>> CreateAsync(AnimeCreateDTO dto);
         Task<Response<string>> UpdateAsync(int id, AnimeUpdateDTO dto);
         Task<Response<string>> DeleteAsync(int id);
+        public Task<Response<IEnumerable<AnimeDTO>>> FiltrarAsync(string? titulo, int? generoId, int? estudioId);
+
     }
 }

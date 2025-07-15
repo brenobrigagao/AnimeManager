@@ -54,4 +54,17 @@ public class AnimeController : ControllerBase
         }
         return Ok(resposta);
     }
+
+    [HttpGet]
+    [Route("filtrar-animes")]
+    public async Task<IActionResult> FiltarAnime(string? titulo, int? generoId, int? estudioId)
+    {
+        var resposta = await _animeService.FiltrarAsync(titulo, generoId, estudioId);
+        if (!resposta.Status)
+        {
+            return BadRequest(resposta);
+        }
+
+        return Ok(resposta);
+    }
 }
