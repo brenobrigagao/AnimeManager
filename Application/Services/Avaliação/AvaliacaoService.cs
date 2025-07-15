@@ -63,7 +63,16 @@ public class AvaliacaoService : IAvaliacaoService
     public async Task<Response<AvaliacaoDTO>> CreateAsync(AvaliacaoCreateDTO dto)
     {
         var resposta = new Response<AvaliacaoDTO>();
+        
+        var existente = await _unityOfWork.Avaliacoes.FindAsync(a =>
+            a.UsuarioId == dto.UsuarioId && a.AnimeId == dto.AnimeId);
 
+        if (existente.Any())
+        {
+            resposta.Status = false;
+            resposta.Mensagem = "Você já avaliou esse anime";
+            return resposta;
+        }
         var nova = new Infra.Entities.Avaliacao
         {
             Nota = dto.Nota,
@@ -85,7 +94,7 @@ public class AvaliacaoService : IAvaliacaoService
             UsuarioId = nova.UsuarioId,
             AnimeId = nova.AnimeId
         };
-
+        await AtualizarMediaDoAnime(dto.AnimeId);
         return resposta;
     }
 
@@ -135,4 +144,19 @@ public class AvaliacaoService : IAvaliacaoService
 
         return resposta;
     }
+
+    private async Task AtualizarMediaDoAnime(int animeId)
+    {
+        var avaliacoes = await _unityOfWork.Avaliacoes.FindAsync(a => a.AnimeId == animeId);
+        var media = avaliacoes.Any() ? avaliacoes.Average(a => a.Nota) : 0;
+
+        var anime = await _unityOfWork.Animes.GetById(animeId);
+        if (anime != null)
+        {
+            anime.MediaNota = media;  
+            _unityOfWork.Animes.Update(anime);
+            await _unityOfWork.SaveChangesAsync();
+        }
+    }
+
 }

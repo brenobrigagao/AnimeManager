@@ -18,13 +18,5 @@ public class Anime : BaseEntity
     public Genero Genero { get; set; }
     public int Ano { get; set; }
     public ICollection<Avaliacao> Avaliacoes { get; set; }
-    [NotMapped]
-    public double MediaNota
-    {
-        get
-        {
-            if (Avaliacoes == null || !Avaliacoes.Any()) return 0;
-            return Avaliacoes.Average(a => a.Nota);
-        }
-    }
+    public double MediaNota { get; set; }
 }
