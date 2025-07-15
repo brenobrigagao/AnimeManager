@@ -51,4 +51,30 @@ public class EstudioController : ControllerBase
         }
         return Ok(resposta);
     }
+
+    [HttpGet]
+    [Route("estudio/{id}")]
+    public async Task<IActionResult> ObterEstudioId(int id)
+    {
+        var resposta = await _estudioService.GetByIdAsync(id);
+        if (!resposta.Status)
+        {
+            return BadRequest(resposta);
+        }
+
+        return Ok(resposta);
+    }
+
+    [HttpGet]
+    [Route("todos-estudios")]
+    public async Task<IActionResult> TodosEstudios()
+    {
+        var resposta = await _estudioService.GetAllAsync();
+        if (!resposta.Status)
+        {
+            return BadRequest(resposta);
+        }
+        return Ok(resposta);
+    }
+    
 }
