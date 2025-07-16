@@ -1,3 +1,4 @@
+using Application.DTO.Anime;
 using Application.DTO.Avaliacao;
 using Application.Services.Avaliação;
 using Infra.Entities;
@@ -98,7 +99,7 @@ public class AvaliacaoService : IAvaliacaoService
         return resposta;
     }
 
-    public async Task<Response<string>> UpdateAsync(int id, AvaliacaoUpdateDTO dto)
+    public async Task<Response<string>> UpdateAsync(int id, AvaliacaoUpdateDTO dto, int usuarioId)
     {
         var resposta = new Response<string>();
 
@@ -110,11 +111,20 @@ public class AvaliacaoService : IAvaliacaoService
             return resposta;
         }
 
+        if (avaliacao.UsuarioId != usuarioId)
+        {
+            resposta.Status = false;
+            resposta.Mensagem = "Você não tem permissão para editar esta avaliação";
+            return resposta;
+        }
+
         avaliacao.Nota = dto.Nota;
         avaliacao.Comentario = dto.Comentario;
 
         _unityOfWork.Avaliacoes.Update(avaliacao);
         await _unityOfWork.SaveChangesAsync();
+        
+        await AtualizarMediaDoAnime(avaliacao.AnimeId);
 
         resposta.Status = true;
         resposta.Mensagem = "Avaliação atualizada com sucesso";
@@ -161,6 +171,48 @@ public class AvaliacaoService : IAvaliacaoService
             UsuarioId = a.UsuarioId,
             AnimeId = a.AnimeId
         });
+        return resposta;
+    }
+
+    public async Task<Response<IEnumerable<AvaliacaoDTO>>> GetAvaliacoesPorAnime(int animeId)
+    {
+        var resposta = new Response<IEnumerable<AvaliacaoDTO>>();
+        
+        var avaliacoes = await _unityOfWork.Avaliacoes.FindAsync(a => a.AnimeId == animeId);
+        
+        resposta.Status = true;
+        resposta.Mensagem = "Avalições do anime carregadas";
+        resposta.Dados = avaliacoes.Select(a => new AvaliacaoDTO()
+        {
+            Id = a.Id,
+            Nota = a.Nota,
+            AnimeId = a.AnimeId,
+            Comentario = a.Comentario,
+            UsuarioId = a.UsuarioId
+        });
+        return resposta;
+    }
+
+    public async Task<Response<IEnumerable<AnimeDTO>>> GetMaisBemAvaliados(int quantidade = 10)
+    {
+        var resposta = new Response<IEnumerable<AnimeDTO>>();
+
+        var animes = await _unityOfWork.Animes.GetAll();
+        var topAnimes = animes
+            .OrderByDescending(a => a.MediaNota)
+            .Take(quantidade)
+            .Select(a => new AnimeDTO
+            {
+                Id = a.Id,
+                Titulo = a.Titulo,
+                Descricao = a.Descricao,
+                MediaNota = a.MediaNota
+            });
+        
+        resposta.Status = true;
+        resposta.Mensagem = "Animes mais bem avaliados carregados";
+        resposta.Dados = topAnimes;
+
         return resposta;
     }
 

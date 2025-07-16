@@ -5,6 +5,7 @@ public class AnimeDTO
     public int Id { get; set; }
     public string Descricao { get; set; } = null!;
     public string Titulo { get; set; } = null!;
+    public double MediaNota { get; set; }
 
     public static AnimeDTO ToDTO(Infra.Entities.Anime anime)
     {
@@ -13,6 +14,7 @@ public class AnimeDTO
             Id = anime.Id,
             Descricao = anime.Descricao,
             Titulo = anime.Titulo,
+            MediaNota = anime.MediaNota
         };
     }
     public static Infra.Entities.Anime ToEntity(AnimeDTO animeDTO)
@@ -21,6 +23,7 @@ public class AnimeDTO
         {
             Descricao = animeDTO.Descricao,
             Titulo = animeDTO.Titulo,
+            MediaNota = animeDTO.MediaNota
         };
     }
 }
