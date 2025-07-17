@@ -2,6 +2,7 @@ using Application.DTO.Auth;
 using Application.DTO.Token;
 using Application.DTO.Usuario;
 using Application.Services.Senha;
+using Application.Services.Token;
 using Infra.Data.Context;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly ISenhaService _senhaService;
-    public AuthService(AppDbContext context, ISenhaService senhaService)
+    private readonly ITokenService _tokenService;
+    public AuthService(AppDbContext context, ISenhaService senhaService, ITokenService tokenService)
     {
         _context = context;
         _senhaService = senhaService;
+        _tokenService = tokenService;
     }
     
     public async Task<Response<UsuarioCreateDTO>> Registrar(UsuarioCreateDTO usuarioRegistro)
@@ -74,8 +77,8 @@ public class AuthService : IAuthService
             return respostaServico;
         }
 
-        var acessToken = _senhaService.CriarToken(usuario);
-        var refreshToken = _senhaService.GerarRefreshToken();
+        var acessToken = _tokenService.CriarToken(usuario);
+        var refreshToken = _tokenService.GerarRefreshToken();
 
         var refreshTokenEntity = new RefreshToken()
         {
@@ -114,8 +117,8 @@ public class AuthService : IAuthService
             return respostaServico;
         }
 
-        var novoAcessToken = _senhaService.CriarToken(refreshTokenEntity.Usuario);
-        var novoRefreshToken = _senhaService.GerarRefreshToken();
+        var novoAcessToken = _tokenService.CriarToken(refreshTokenEntity.Usuario);
+        var novoRefreshToken = _tokenService.GerarRefreshToken();
 
         refreshTokenEntity.Revogado = true;
         _context.RefreshTokens.Add(new RefreshToken
